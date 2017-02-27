@@ -27,16 +27,7 @@ $(document).ready(function() {
       });
       port.onMessage.addListener(function(msg) {});
     });
-    // chrome.tabs.query({
-    //   active: true,
-    //   currentWindow: true
-    // }, function(tabs) {
-    //   chrome.tabs.sendMessage(tabs[0].id, {
-    //     query: val
-    //   }, function(response) {
-    //
-    //   });
-    // });
+
     // var elements = document.getElementsByTagName('*');
     // for (var key in elements) {
     //   // skip loop if the property is from prototype
