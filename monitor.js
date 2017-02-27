@@ -1,23 +1,18 @@
-var elements = document.getElementsByTagName('*');
-
-for (var i = 0; i < elements.length; i++) {
-  var element = elements[i];
-
-  for (var j = 0; j < element.childNodes.length; j++) {
-    var node = element.childNodes[j];
-
-    if (node.nodeType === 3) {
-      var text = node.nodeValue;
-      console.log(node);
-      var replacedText = text.replace("Chrome", 'Chrome');
-
-      if (replacedText !== text) {
-        element.replaceChild(document.createTextNode(replacedText), node);
-      }
-    }
-  }
-}
-
 $(document).ready(function() {
-  $("body").mark("chrome");
+
+  chrome.runtime.onConnect.addListener(function(port) {
+    console.assert(port.name == "markquery");
+    port.onMessage.addListener(function(msg) {
+      $("body").unmark();
+      $("body").mark(msg.query);
+    });
+  });
+
+  // chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+  //   console.log(sender.tab ?
+  //     "from a content script:" + sender.tab.url :
+  //     "from the extension");
+  //
+  //   $("body").mark(request.query);
+  // })
 });
