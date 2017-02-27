@@ -15,13 +15,13 @@
       -
       - [1]: https://developer.chrome.com/extensions/contentSecurityPolicy
      -->
-    <script src="popup.js"></script>
+    <script src="delegate.js"></script>
   </head>
 
   <body>
     <form>
       <div class="input-group">
-        <input type="text" placeholder="Search..." class="form-control" style="min-width: 200px;" aria-label="...">
+        <input id="searchBox" type="text" placeholder="Search..." class="form-control" style="min-width: 200px;" aria-label="...">
         <div class="input-group-btn">
           <!-- Buttons -->
           <button class="btn btn-default" id="left"><i class="fa fa-chevron-up"></i></button>
