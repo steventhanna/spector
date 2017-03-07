@@ -1,9 +1,39 @@
 $(document).ready(function() {
 
+  var counter = 0;
+
   // When there is input in the search box, run the search function
   $("#searchBox").bind('input', function() {
     var currentVal = $(this).val();
     runSearch(currentVal);
+  });
+
+  $("#upButton").click(function() {
+    chrome.tabs.query({
+      active: true,
+      currentWindow: true
+    }, function(tabs) {
+      var port = chrome.tabs.connect(tabs[0].id, {
+        name: "pager"
+      });
+      port.postMessage({
+        val: "up"
+      });
+    });
+  });
+
+  $("#downButton").click(function() {
+    chrome.tabs.query({
+      active: true,
+      currentWindow: true
+    }, function(tabs) {
+      var port = chrome.tabs.connect(tabs[0].id, {
+        name: "pager"
+      });
+      port.postMessage({
+        val: "down"
+      });
+    });
   });
 
   /**
@@ -17,31 +47,12 @@ $(document).ready(function() {
       active: true,
       currentWindow: true
     }, function(tabs) {
-      console.log(typeof tabs);
-      console.log(tabs[0].id);
       var port = chrome.tabs.connect(tabs[0].id, {
         name: "markquery"
       });
       port.postMessage({
         query: val
       });
-      port.onMessage.addListener(function(msg) {});
     });
-
-    // var elements = document.getElementsByTagName('*');
-    // for (var key in elements) {
-    //   // skip loop if the property is from prototype
-    //   if (!elements.hasOwnProperty(key)) continue;
-    //
-    //   var obj = elements[key];
-    //   for (var prop in obj) {
-    //     // skip loop if the property is from prototype
-    //     if (!obj.hasOwnProperty(prop)) continue;
-    //
-    //     // your code
-    //     console.log(prop + " = " + obj[prop]);
-    //   }
-    // }
-    // console.log(val);
   }
 });
