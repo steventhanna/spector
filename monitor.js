@@ -43,6 +43,7 @@ $(document).ready(function() {
           }
         };
         $("body").unmark();
+        removeHighlight();
         elems = [];
         counter = 0;
         $("body").mark(msg.query, options);
@@ -113,14 +114,17 @@ $(document).ready(function() {
 
   /**
    * Removes all highlighting from affected images
+   * Hopefully this works
    */
-  function removeHighlgiht() {
+  function removeHighlight() {
     var images = document.images;
     for (var i = 0; i < images.length; i++) {
-      if ($(images[i]).hasClass() == true) {
-        $(this).removeClass('image-highlight');
+      if (images[i].classList.contains('image-highlight') == true) {
+        $(images[i]).removeClass('image-highlight');
         $(images[i]).css('border-radius', '');
         $(images[i]).css('border', '');
+      } else {
+        console.log("Image does not have class");
       }
     }
   }
