@@ -1,7 +1,8 @@
+/**
+ * Delegate :: Handles interaction between user interface and content-scripts
+ */
+
 $(document).ready(function() {
-
-  var counter = 0;
-
   // When there is input in the search box, run the search function
   $("#searchBox").bind('input', function() {
     var currentVal = $(this).val();

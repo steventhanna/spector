@@ -12,10 +12,11 @@
   "background": {
     "scripts": ["monitor.js"]
   },
+  "web_accessible_resources": ["css/style.css"],
   "content_scripts": [ {
-    "js": ["js/jquery.min.js", "js/jquery.mark.min.js", "monitor.js" ],
     "matches": [ "*://*/*" ],
-    "run_at": "document_end"
+    "js": ["js/jquery.min.js", "js/jquery.mark.min.js", "monitor.js" ],
+    "css": ["css/style.css"]
  } ],
   "permissions": [
     "activeTab",
