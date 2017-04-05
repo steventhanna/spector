@@ -46,7 +46,9 @@ $(document).ready(function() {
         elems = [];
         counter = 0;
         $("body").mark(msg.query, options);
-        console.log(getImageURLS());
+        scanImages(function(elem) {
+          console.log(elem);
+        });
         // Sort the elems
         elems.sort(dynamicSort("offsetTop"));
         // for (var i = 0; i < elems.length; i++) {
@@ -93,7 +95,7 @@ $(document).ready(function() {
   /**
    * Get the image URLS from the page
    */
-  function getImageURLS() {
+  function scanImages(callback) {
     var images = document.images;
     // For testing, highlight all the images on the page to see if it even works
     for (var i = 0; i < images.length; i++) {
@@ -105,7 +107,7 @@ $(document).ready(function() {
       $(images[i]).css('border-radius', '50%');
       $(images[i]).css('border', '5px solid yellow');
     }
-    return document.images;
+    callback(document.images);
   }
 
 
