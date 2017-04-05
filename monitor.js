@@ -101,14 +101,25 @@ $(document).ready(function() {
     // For testing, highlight all the images on the page to see if it even works
     for (var i = 0; i < images.length; i++) {
       var temp = images[i].innerHTML;
-      // console.log("Inner HTML: " + images[i].innerHTML);
-      // images[i].innerHTML = '<mark data-markjs="true">' + temp + '</mark>';
-      // Try using jQuery
       $(images[i]).addClass('image-highlight');
       $(images[i]).css('border-radius', '50%');
       $(images[i]).css('border', '5px solid yellow');
+      // Analyze the image
+      analyzeImage(images[i], function() {
+        console.log("DONE");
+      });
     }
     callback(document.images);
+  }
+
+  /**
+   * Highlight the image on the page
+   * @param imageObj :: The image to highlight
+   */
+  function highlightImage(imageObj) {
+    $(imageObj).addClass('image-highlight');
+    $(imageObj).css('border-radius', '50%');
+    $(imageObj).css('border', '5px solid yellow');
   }
 
 
@@ -127,5 +138,19 @@ $(document).ready(function() {
         console.log("Image does not have class");
       }
     }
+  }
+
+  /**
+   * Analyze an image using tesseract
+   * @param :: imageObj - the image object from the DOM
+   * @returns :: the text inside the image if any
+   */
+  function analyzeImage(imageObj, callback) {
+    Tesseract.recognize(imageObj.src).progress(function(message) {
+      console.log("Progress is: " + JSON.stringify(message));
+    }).then(function(result) {
+      console.log("Result is: " + result.text);
+      callback();
+    });
   }
 });
