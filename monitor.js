@@ -7,6 +7,8 @@
 $(document).ready(function() {
 
   var elems = [];
+  var imageState = undefined;
+  var textState = undefined;
 
   var counter = 0;
 
@@ -37,6 +39,14 @@ $(document).ready(function() {
           },
           "done": function(num) {
             console.log("Number of matches: " + num);
+            if (num != undefined && num > 0) {
+              textState = true;
+            } else if (msg.query != undefined && msg.query.length > 0) {
+              textState = false;
+            } else {
+              textState = undefined;
+            }
+            sendState();
             port.postMessage({
               count: num
             });
@@ -46,6 +56,10 @@ $(document).ready(function() {
         removeHighlight();
         elems = [];
         counter = 0;
+        if (msg.query == undefined || msg.query.length == 0) {
+          textState = undefined;
+          imageState = undefined;
+        }
         $("body").mark(msg.query, options);
         scanImages(msg.query);
         // Sort the elems
@@ -53,20 +67,22 @@ $(document).ready(function() {
       });
     } else if (port.name == "pager") {
       port.onMessage.addListener(function(query) {
-        if (query.val == "down") {
-          counter++;
-          if (counter > elems.length - 1) {
-            counter = 0;
+        if (elems != undefined && elems.length > 0) {
+          if (query.val == "down") {
+            counter++;
+            if (counter > elems.length - 1) {
+              counter = 0;
+            }
+          } else if (query.val == "up") {
+            counter--;
+            if (counter < 0) {
+              counter = elems.length - 1;
+            }
+          } else {
+            console.log("Something went wrong.");
           }
-        } else if (query.val == "up") {
-          counter--;
-          if (counter < 0) {
-            counter = elems.length - 1;
-          }
-        } else {
-          console.log("Something went wrong.");
+          scrollToPosition();
         }
-        scrollToPosition();
       });
     }
   });
@@ -161,9 +177,14 @@ $(document).ready(function() {
     if (imgText != undefined) {
       if (imgText.includes(query) && query.length > 0) {
         highlightImage(imageObj);
-      } else {
+        imageState = true;
+      } else if (query.length > 0) {
         removeImageHighlight(imageObj);
+        imageState = false;
+      } else {
+        imageState = undefined;
       }
+      sendState();
       callback(undefined);
     } else {
       Tesseract.recognize(imageObj.src)
@@ -182,11 +203,28 @@ $(document).ready(function() {
           if (text != undefined && text.includes(query) && query.length > 0) {
             // Highlight the image
             highlightImage(imageObj);
+            imageState = true;
           } else {
             removeImageHighlight(imageObj);
+            imageState = false;
           }
+          sendState();
           callback(undefined);
         });
     }
+  }
+
+  /**
+   * Send the state of the search (if results were found or not) back to the UI
+   */
+  function sendState() {
+    var port = chrome.runtime.connect({
+      name: "state"
+    });
+    console.log(imageState);
+    console.log(textState);
+    port.postMessage({
+      state: (imageState || textState)
+    });
   }
 });

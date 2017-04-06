@@ -15,10 +15,20 @@
       - [1]: https://developer.chrome.com/extensions/contentSecurityPolicy
      -->
     <script src="delegate.js"></script>
+    <style>
+      .btn-success {
+        background-color: #3c763d;
+        border-color: #3c763d;
+      }
+
+      .has-error .form-control {
+        border-color: #d9534f;
+      }
+    </style>
   </head>
   <body>
     <form>
-      <div class="input-group">
+      <div id="inputGroup" class="input-group">
         <input id="searchBox" type="text" placeholder="Search..." class="form-control" style="min-width: 200px;" aria-label="...">
         <div class="input-group-btn">
           <!-- Buttons -->
