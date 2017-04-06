@@ -145,7 +145,8 @@ $(document).ready(function() {
     $(image).css('border', '');
   }
 
-  var recentImages = [];
+  // Hold the most recent images
+  var imageMap = new Map();
 
   /**
    * Analyze an image using tesseract
@@ -154,27 +155,38 @@ $(document).ready(function() {
    * @returns :: the text inside the image if any
    */
   function analyzeImage(imageObj, query, callback) {
-    Tesseract.recognize(imageObj.src)
-      .progress(function(message) {
-        console.log("Progress is: " + JSON.stringify(message));
-      })
-      .catch(function(err) {
-        callback(err);
-      })
-      .then(function(result) {
-        console.log("Result is: " + result.text);
-        var text = result.text.toLowerCase();
-        query = query.toLowerCase();
-        console.log("TEXT: + " + text);
-        console.log("QUERY: " + query);
-        // console.log(result.text);
-        if (text != undefined && text.includes(query) && query.length > 0) {
-          // Highlight the image
-          highlightImage(imageObj);
-        } else {
-          removeImageHighlight(imageObj);
-        }
-        callback(undefined);
-      });
+    // Image Text should alrady be lowercase at this point
+    var imgText = imageMap.get(imageObj.src);
+    query = query.toLowerCase();
+    if (imgText != undefined) {
+      if (imgText.includes(query) && query.length > 0) {
+        highlightImage(imageObj);
+      } else {
+        removeImageHighlight(imageObj);
+      }
+      callback(undefined);
+    } else {
+      Tesseract.recognize(imageObj.src)
+        .progress(function(message) {
+          console.log("Progress is: " + JSON.stringify(message));
+        })
+        .catch(function(err) {
+          callback(err);
+        })
+        .then(function(result) {
+          console.log("Result is: " + result.text);
+          var text = result.text.toLowerCase();
+          // Add the analyzed data to the map for recall later
+          imageMap.set(imageObj.src, text);
+          console.log(result.text);
+          if (text != undefined && text.includes(query) && query.length > 0) {
+            // Highlight the image
+            highlightImage(imageObj);
+          } else {
+            removeImageHighlight(imageObj);
+          }
+          callback(undefined);
+        });
+    }
   }
 });
