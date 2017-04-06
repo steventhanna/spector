@@ -15,7 +15,7 @@
   "web_accessible_resources": ["css/style.css"],
   "content_scripts": [ {
     "matches": [ "*://*/*" ],
-    "js": ["js/jquery.min.js", "js/jquery.mark.min.js", "monitor.js", "js/tesseract.js" ],
+    "js": ["js/jquery.min.js", "js/jquery.mark.min.js", "monitor.js", "js/tesseract.js", "js/async.js" ],
     "css": ["css/style.css"]
  } ],
   "permissions": [

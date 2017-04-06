@@ -47,15 +47,9 @@ $(document).ready(function() {
         elems = [];
         counter = 0;
         $("body").mark(msg.query, options);
-        scanImages(function(elem) {
-          console.log(elem);
-        });
+        scanImages(msg.query);
         // Sort the elems
         elems.sort(dynamicSort("offsetTop"));
-        // for (var i = 0; i < elems.length; i++) {
-        //   console.log(elems[i].offsetTop);
-        // }
-        // console.log(elems);
       });
     } else if (port.name == "pager") {
       port.onMessage.addListener(function(query) {
@@ -95,21 +89,26 @@ $(document).ready(function() {
 
   /**
    * Get the image URLS from the page
+   * @param :: query - the search query to look through the images for
+   * @return callback - when complete
    */
-  function scanImages(callback) {
+  function scanImages(query) {
     var images = document.images;
     // For testing, highlight all the images on the page to see if it even works
-    for (var i = 0; i < images.length; i++) {
-      var temp = images[i].innerHTML;
-      $(images[i]).addClass('image-highlight');
-      $(images[i]).css('border-radius', '50%');
-      $(images[i]).css('border', '5px solid yellow');
-      // Analyze the image
-      analyzeImage(images[i], function() {
-        console.log("DONE");
+    async.each(images, function(image, cb) {
+      analyzeImage(image, query, function(err) {
+        if (err) {
+          console.error("There was an error analyzing the image.");
+          console.error(err);
+        } else {
+          cb();
+        }
       });
-    }
-    callback(document.images);
+    }, function(err) {
+      if (err) {
+        console.error(err);
+      }
+    });
   }
 
   /**
@@ -140,17 +139,42 @@ $(document).ready(function() {
     }
   }
 
+  function removeImageHighlight(image) {
+    $(image).removeClass('image-highlight');
+    $(image).css('border-radius', '');
+    $(image).css('border', '');
+  }
+
+  var recentImages = [];
+
   /**
    * Analyze an image using tesseract
    * @param :: imageObj - the image object from the DOM
+   * @param :: query - the query to check if the message contains
    * @returns :: the text inside the image if any
    */
-  function analyzeImage(imageObj, callback) {
-    Tesseract.recognize(imageObj.src).progress(function(message) {
-      console.log("Progress is: " + JSON.stringify(message));
-    }).then(function(result) {
-      console.log("Result is: " + result.text);
-      callback();
-    });
+  function analyzeImage(imageObj, query, callback) {
+    Tesseract.recognize(imageObj.src)
+      .progress(function(message) {
+        console.log("Progress is: " + JSON.stringify(message));
+      })
+      .catch(function(err) {
+        callback(err);
+      })
+      .then(function(result) {
+        console.log("Result is: " + result.text);
+        var text = result.text.toLowerCase();
+        query = query.toLowerCase();
+        console.log("TEXT: + " + text);
+        console.log("QUERY: " + query);
+        // console.log(result.text);
+        if (text != undefined && text.includes(query) && query.length > 0) {
+          // Highlight the image
+          highlightImage(imageObj);
+        } else {
+          removeImageHighlight(imageObj);
+        }
+        callback(undefined);
+      });
   }
 });
