@@ -78,6 +78,7 @@ $(document).ready(function() {
         $("#inputGroup").removeClass("has-error");
         $("#inputGroup").removeClass("has-success");
         $("#upButton").removeClass("btn-success");
+        $("#upButton").removeClass("btn-danger");
         $("#downButton").removeClass("btn-danger")
         $("#downButton").removeClass("btn-success")
       }
