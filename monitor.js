@@ -221,8 +221,6 @@ $(document).ready(function() {
     var port = chrome.runtime.connect({
       name: "state"
     });
-    console.log(imageState);
-    console.log(textState);
     port.postMessage({
       state: (imageState || textState)
     });
