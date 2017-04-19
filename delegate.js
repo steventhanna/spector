@@ -57,6 +57,7 @@ $(document).ready(function() {
     });
   }
 
+  // Handle the colorization of the search bar
   chrome.runtime.onConnect.addListener(function(port) {
     console.assert(port.name == "state");
     port.onMessage.addListener(function(msg) {

@@ -6,12 +6,20 @@
 
 $(document).ready(function() {
 
+  // All hte elements on the page
   var elems = [];
+  // The initial image lookup state
   var imageState = undefined;
+  // The initial text lookup state
   var textState = undefined;
 
+  // The current location of which element we are on
   var counter = 0;
 
+  /**
+   * Scroll to the next position of the highlighted word on the page
+   * Note :: Does not scroll to images
+   */
   function scrollToPosition() {
     var loc = elems[counter];
     var height = loc.offsetTop;
@@ -30,6 +38,9 @@ $(document).ready(function() {
   }
 
 
+  /**
+   * Add a listener to listen between content scripts and the chrome extension
+   */
   chrome.runtime.onConnect.addListener(function(port) {
     if (port.name == "markquery") {
       port.onMessage.addListener(function(msg) {
@@ -140,7 +151,6 @@ $(document).ready(function() {
 
   /**
    * Removes all highlighting from affected images
-   * Hopefully this works
    */
   function removeHighlight() {
     var images = document.images;
@@ -155,6 +165,10 @@ $(document).ready(function() {
     }
   }
 
+  /**
+   * Remove the highlighting from the image
+   * @paran :: image - the image object from the DOM to remove the highlight from
+   */
   function removeImageHighlight(image) {
     $(image).removeClass('image-highlight');
     $(image).css('border-radius', '');
@@ -199,7 +213,6 @@ $(document).ready(function() {
           var text = result.text.toLowerCase();
           // Add the analyzed data to the map for recall later
           imageMap.set(imageObj.src, text);
-          console.log(result.text);
           if (text != undefined && text.includes(query) && query.length > 0) {
             // Highlight the image
             highlightImage(imageObj);
